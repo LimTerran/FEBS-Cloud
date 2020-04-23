@@ -1,8 +1,8 @@
 package cc.mrbird.febs.gateway.enhance.service.impl;
 
-import cc.mrbird.febs.common.entity.FebsResponse;
-import cc.mrbird.febs.common.utils.DateUtil;
-import cc.mrbird.febs.common.utils.FebsUtil;
+import cc.mrbird.febs.common.core.entity.FebsResponse;
+import cc.mrbird.febs.common.core.utils.DateUtil;
+import cc.mrbird.febs.common.core.utils.FebsUtil;
 import cc.mrbird.febs.gateway.enhance.entity.*;
 import cc.mrbird.febs.gateway.enhance.service.*;
 import cc.mrbird.febs.gateway.enhance.utils.AddressUtil;
@@ -36,14 +36,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class RouteEnhanceServiceImpl implements RouteEnhanceService {
 
+    private static final String METHOD_ALL = "ALL";
+    private static final String TOKEN_CHECK_URL = "/auth/user";
     private final RouteLogService routeLogService;
     private final BlockLogService blockLogService;
     private final RateLimitLogService rateLimitLogService;
     private final RouteEnhanceCacheService routeEnhanceCacheService;
-
-    private AntPathMatcher pathMatcher = new AntPathMatcher();
-    private static final String METHOD_ALL = "ALL";
-    private static final String TOKEN_CHECK_URL = "/auth/user";
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     public Mono<Void> filterBalckList(ServerWebExchange exchange) {
@@ -185,9 +184,10 @@ public class RouteEnhanceServiceImpl implements RouteEnhanceService {
 
     private Mono<Void> doRateLimitCheck(AtomicBoolean limit, RateLimitRule rule, URI uri,
                                         String requestIp, String requestMethod, ServerHttpResponse response) {
-        if (RateLimitRule.OPEN.equals(rule.getStatus())
-                && (BlackList.METHOD_ALL.equalsIgnoreCase(rule.getRequestMethod())
-                || StringUtils.equalsIgnoreCase(requestMethod, rule.getRequestMethod()))) {
+        boolean isRateLimitRuleHit = RateLimitRule.OPEN.equals(rule.getStatus())
+                && (RateLimitRule.METHOD_ALL.equalsIgnoreCase(rule.getRequestMethod())
+                || StringUtils.equalsIgnoreCase(requestMethod, rule.getRequestMethod()));
+        if (isRateLimitRuleHit) {
             if (StringUtils.isNotBlank(rule.getLimitFrom()) && StringUtils.isNotBlank(rule.getLimitTo())) {
                 if (DateUtil.between(LocalTime.parse(rule.getLimitFrom()), LocalTime.parse(rule.getLimitTo()))) {
                     limit.set(true);
