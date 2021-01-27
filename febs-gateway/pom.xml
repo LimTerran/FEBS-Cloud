@@ -5,7 +5,7 @@
     <parent>
         <groupId>cc.mrbird</groupId>
         <artifactId>febs-cloud</artifactId>
-        <version>2.1-RELEASE</version>
+        <version>2.2-RELEASE</version>
         <relativePath>../febs-cloud/pom.xml</relativePath>
     </parent>
 
@@ -14,7 +14,7 @@
     <description>FEBS-Gateway服务网关模块</description>
 
     <properties>
-        <febs-cloud.version>2.1-RELEASE</febs-cloud.version>
+        <febs-cloud.version>2.2-RELEASE</febs-cloud.version>
     </properties>
 
     <dependencies>
@@ -52,9 +52,15 @@
             <version>${febs-cloud.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
-            <version>${logstash-logback-encoder.version}</version>
+            <groupId>cc.mrbird</groupId>
+            <artifactId>febs-common-logging-starter</artifactId>
+            <version>${febs-cloud.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>

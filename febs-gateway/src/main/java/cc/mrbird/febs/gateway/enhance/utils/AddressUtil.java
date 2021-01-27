@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
  * @author MrBird
  */
 @Slf4j
-public class AddressUtil {
+public abstract class AddressUtil {
 
     public static String getCityInfo(String ip) {
         DbSearcher searcher = null;
@@ -48,7 +48,7 @@ public class AddressUtil {
                 try {
                     searcher.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("ip2region searcher close error", e);
                 }
             }
         }
